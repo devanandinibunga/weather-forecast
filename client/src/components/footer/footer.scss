@@ -1,0 +1,12 @@
+@use "../../assests/style/" as *;
+
+.footer-wrapper {
+  width: 100%;
+  height: 4vh;
+  @include justify-content-center;
+  @include align-items-center;
+}
+
+.ant-layout-footer {
+  background-color: #e8e8ed;
+}

@@ -1,0 +1,23 @@
+@use "../../assests/style/" as *;
+.weather-variables-wrapper {
+  width: 100%;
+  background-color: $white;
+  padding: 2%;
+  border-radius: 1.5rem;
+  margin-top: 1%;
+  margin-bottom: 1%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  .title-location-wrapper {
+    @include justify-content-between;
+    @include align-items-center;
+    .title {
+      color: rgba(0, 0, 0, 0.847);
+      font-size: 2.2rem;
+      font-style: normal;
+      font-weight: 600;
+    }
+  }
+  .checkbox-group {
+    padding: 1% 0;
+  }
+}

@@ -1,0 +1,38 @@
+@use "../../assests/style/" as *;
+
+.table-wrapper {
+  background-color: $white;
+  padding: 2%;
+  border-radius: 1.5rem;
+  margin-top: 1%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  .location-filter-wrapper {
+    margin-bottom: 1%;
+    .title {
+      color: rgba(0, 0, 0, 0.847);
+      font-size: 2.2rem;
+      font-style: normal;
+      font-weight: 600;
+    }
+    text-align: left;
+    @include align-items-center;
+    @include justify-content-between;
+    .select-filter-wrapper {
+      @include d-flex;
+      @include align-items-center;
+      gap: 5%;
+    }
+    @include media("<md") {
+      @include flex-column;
+    }
+  }
+  .ant-table-thead > tr > th {
+    background-color: #a1b8df;
+    color: #000;
+    font-weight: bold;
+    text-align: center;
+  }
+  .ant-table-tbody > tr > td {
+    text-align: center;
+  }
+}

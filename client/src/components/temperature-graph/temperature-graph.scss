@@ -1,0 +1,19 @@
+@use "../../assests/style/" as *;
+
+.weather-update-wrapper {
+  width: 100%;
+  background-color: $white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  height: calc(100vh - 12vh - 5vh);
+  margin: auto;
+  padding: 2%;
+  .title {
+    color: rgba(0, 0, 0, 0.847);
+    font-size: 2.2rem;
+    font-style: normal;
+    font-weight: 600;
+  }
+  .back-btn {
+    margin-top: 20px;
+  }
+}

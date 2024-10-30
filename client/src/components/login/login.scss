@@ -1,0 +1,23 @@
+.login-page-container {
+  // background-image: url("../../asserts/images/login-page-image.jpg");
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: 100%;
+  object-fit: contain;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  .login-form-container {
+    padding: 5%;
+    width: 30%;
+    .forgot-password {
+      color: #1677ff;
+      text-align: right;
+      cursor: pointer;
+    }
+  }
+}
+.ant-modal .ant-modal-content {
+  text-align: center;
+}

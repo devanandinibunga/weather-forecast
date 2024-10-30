@@ -1,0 +1,190 @@
+//CSS flex Reference
+@mixin d-flex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+@mixin flex-row-wrap {
+  @include d-flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap;
+}
+@mixin flex-row {
+  @include d-flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+@mixin flex-row-reverse {
+  @include d-flex;
+  -webkit-box-direction: row-reverse;
+  -ms-flex-direction: row-reverse;
+  flex-direction: row-reverse;
+}
+@mixin flex-column {
+  @include d-flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+@mixin flex-wrap {
+  @include d-flex;
+  flex-wrap: wrap;
+}
+@mixin justify-content-start {
+  @include d-flex;
+  -webkit-box-pack: start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+}
+
+@mixin justify-content-end {
+  @include d-flex;
+  -webkit-box-pack: end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+@mixin justify-content-center {
+  @include d-flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+@mixin justify-content-right {
+  @include d-flex;
+  -webkit-box-pack: right;
+  -ms-flex-pack: right;
+  justify-content: right;
+}
+
+@mixin justify-content-between {
+  @include d-flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+@mixin justify-content-around {
+  @include d-flex;
+  -ms-flex-pack: distribute;
+  justify-content: space-around;
+}
+
+@mixin justify-content-evenly {
+  @include d-flex;
+  -webkit-box-pack: space-evenly;
+  -ms-flex-pack: space-evenly;
+  justify-content: space-evenly;
+}
+@mixin justify-content-unset {
+  @include d-flex;
+  -ms-flex-pack: unset;
+  justify-content: unset;
+}
+@mixin align-items-start {
+  @include d-flex;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+}
+@mixin align-items-end {
+  @include d-flex;
+  -webkit-box-align: end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+}
+@mixin align-items-center {
+  @include d-flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+@mixin align-items-baseline {
+  @include d-flex;
+  -webkit-box-align: baseline;
+  -ms-flex-align: baseline;
+  align-items: baseline;
+}
+
+@mixin align-items-stretch {
+  @include d-flex;
+  -webkit-box-align: stretch;
+  -ms-flex-align: stretch;
+  align-items: stretch;
+}
+
+@mixin align-justify-center {
+  @include d-flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+@mixin font-style($icolor, $size, $lHeight, $fweight) {
+  font-weight: $fweight;
+  font-size: $size;
+  line-height: $lHeight;
+  color: $icolor;
+    font-style: normal;
+}
+@mixin horizontal-line($width, $height, $color) {
+  width: $width;
+  height: $height;
+  background-color: $color;
+}
+@mixin flex-grow($n) {
+  flex-grow: $n;
+}
+
+@mixin flex-shrink($n) {
+  flex-shrink: $n;
+}
+@mixin text-ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+@mixin text-ellipsis-multiline {
+  @include text-ellipsis;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+@mixin text-ellipsis-multi-line($n) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: initial;
+  display: -webkit-box;
+  -webkit-line-clamp: $n;
+  -webkit-box-orient: vertical;
+}
+@mixin custom-btn($bgColor,$radius,$opacity) {
+  background-color: $bgColor;
+  border-radius: $radius;
+  text-transform: uppercase;
+  opacity: $opacity;
+}
+
+@mixin placement($position, $rotate, $left, $top) {
+  position: $position;
+  rotate: $rotate;
+  left: $left;
+  top: $top;
+}
+
+@mixin rotate($deg) {
+  transform: rotate($deg);
+  -webkit-transform: rotate($deg);
+  -moz-transform: rotate($deg);
+  display: inline-block;
+  transition: transform 0.2s;
+}

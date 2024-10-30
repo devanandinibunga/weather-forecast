@@ -1,0 +1,10 @@
+@use "../../assests/style/" as *;
+
+.add-location-wrapper {
+  .ant-btn-primary {
+    background-color: $indigo;
+  }
+  .ant-btn-primary:hover {
+    background-color: $indigo !important;
+  }
+}
