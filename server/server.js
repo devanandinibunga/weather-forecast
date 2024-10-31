@@ -222,7 +222,6 @@ app.get(
         (page - 1) * limit,
         page * limit,
       );
-
       res.json({
         total,
         page,
@@ -239,51 +238,38 @@ app.get(
   },
 );
 
-wss.on("connection", (ws) => {
-  console.log("Client connected");
-  const fetchWeatherData = async () => {
-    if (ws.readyState === ws.OPEN) {
-      try {
-        const response = await axios.get(
-          `https://api.open-meteo.com/v1/forecast`,
-          {
-            params: {
-              latitude: 40.7128,
-              longitude: -74.006,
-              hourly: "temperature_2m,rain",
-              start: new Date().toISOString(),
-              timezone: "America/New_York",
-            },
+app.get(
+  "/average-temperature",
+  verifyJWT,
+  authorizeRole(["admin", "manager", "user"]),
+  async (req, res) => {
+    try {
+      const response = await axios.get(
+        `https://api.open-meteo.com/v1/forecast`,
+        {
+          params: {
+            latitude: 40.7128,
+            longitude: -74.006,
+            hourly: "temperature_2m,rain",
+            start: new Date().toISOString(),
+            timezone: "America/New_York",
           },
-        );
-        ws.send(JSON.stringify(response.data));
-      } catch (error) {
-        console.error("Error fetching weather data:", error);
-      }
-    } else {
-      console.log("WebSocket is not open");
+        },
+      );
+      res.json(response?.data);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+      res.status(500).json({ error: "Failed to fetch weather chart data" });
     }
-  };
-  fetchWeatherData();
-  const intervalId = setInterval(fetchWeatherData, 300000);
-  ws.on("close", () => {
-    console.log("Client disconnected");
-    clearInterval(intervalId);
-  });
+  },
+);
 
-  ws.on("error", (err) => {
-    console.error("WebSocket error:", err);
-  });
-});
-
-// POST API to add a new location
 app.post(
   "/api/addLocation",
   verifyJWT,
-  authorizeRole(["admin"]),
+  authorizeRole(["admin", "manager", "user"]), // Added manager and user to update current location after their login
   async (req, res) => {
     const { latitude, longitude } = req.body;
-
     if (latitude && longitude) {
       try {
         // Check if a location with the same latitude and longitude already exists
