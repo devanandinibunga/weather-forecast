@@ -90,7 +90,6 @@ app.post("/login", async (req, res) => {
     if (!bcrypt.compare(password, user.password)) {
       return res.status(403).send("Invalid credentials");
     }
-    console.log(user);
     const payload = {
       user: {
         id: user._id,
@@ -127,10 +126,8 @@ const upload = multer({ dest: "uploads/" });
 app.post("/api/upload", upload.single("file"), async (req, res) => {
   const file = req.file;
   const results = [];
-  // Clear existing data in the CSVData collection
   try {
     await CSVData.deleteMany({});
-    console.log("Existing data cleared.");
   } catch (error) {
     console.error("Error clearing data:", error);
     return res.status(500).send("Error clearing existing data");
