@@ -19,16 +19,20 @@ const Register = () => {
     }
   }, [token]);
   const onFinish = async (payload) => {
-    await axios.post("https://weather-forecast-server-one.vercel.app/register", payload).then((res) => {
-      if (res?.status === 200) {
-        form.resetFields();
-        setStatus("success");
-        setMessage("Registered successfully");
-        setTimeout(() => {
-          navigate("/login");
-        }, 1000);
-      }
-    });
+    await axios
+      .post("https://weather-forecast-server-one.vercel.app/register", payload)
+      .then((res) => {
+        if (res?.status === 200) {
+          form.resetFields();
+          setStatus("success");
+          setMessage("Registered successfully");
+          setTimeout(() => {
+            navigate("/login");
+          }, 1000);
+        } else {
+          console.log(res?.data);
+        }
+      });
   };
   return (
     <div className="register-page-container">
@@ -72,18 +76,6 @@ const Register = () => {
             dependencies={["password"]}
             rules={[
               { required: true, message: "Please confirm your password!" },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(
-                    new Error(
-                      "The two passwords that you entered do not match!",
-                    ),
-                  );
-                },
-              }),
             ]}
           >
             <Input.Password

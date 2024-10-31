@@ -34,7 +34,7 @@ export const Header = ({ profileDetails }) => {
     <div className="header-container">
       <div>
         <p className="welcome-message">Welcome!! {profileDetails?.username}</p>
-        <h3>Weather Forecast Analysis</h3>
+        <h3>Weather Forecast</h3>
       </div>
       <div className="dropdown-container">
         <Dropdown

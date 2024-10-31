@@ -11,12 +11,18 @@
   padding: 0 15px;
   z-index: 1000;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  @include media(">xxl") {
+    height: 7vh;
+  }
 }
 .header-container {
   @include justify-content-between;
   @include align-items-center;
   height: 12vh;
   width: 100%;
+  @include media(">xxl") {
+    height: 7vh;
+  }
   h3 {
     margin-bottom: 0;
     font-size: 25px;

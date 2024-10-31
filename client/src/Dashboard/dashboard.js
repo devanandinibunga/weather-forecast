@@ -97,6 +97,8 @@ function Dashboard() {
         "Error retrieving locations:",
         error?.response?.data?.message,
       );
+      setStatus("warning");
+      setMessage(error?.response?.data?.message);
     }
   };
   useEffect(() => {
@@ -116,7 +118,9 @@ function Dashboard() {
         fetchSavedLocations();
         form.resetFields();
       } catch (error) {
-        console.error("Error adding location:", error.response.data.message);
+        console.error("Error adding location:", error?.response?.data?.message);
+        setStatus("warning");
+        setMessage(error?.response?.data?.message);
       }
     };
     if (location?.latitude !== null && token) {

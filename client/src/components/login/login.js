@@ -2,15 +2,19 @@ import { Button, Form, Input } from "antd";
 import { useForm } from "antd/es/form/Form";
 import axios from "axios";
 import Cookies from "js-cookie";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import "./login.scss";
+import NotifyStatus from "../notify-status/notify-status";
 
 const Login = () => {
   const [form] = useForm();
   const navigate = useNavigate();
   const token = Cookies.get("authToken");
+  const [status, setStatus] = useState("");
+  const [message, setMessage] = useState("");
+
   useEffect(() => {
     if (token) {
       navigate("/dashboard");
@@ -27,7 +31,10 @@ const Login = () => {
           navigate("/dashboard", { replace: true });
         }
       })
-      .catch((error) => console.error("Error fetching data:", error));
+      .catch((error) => {
+        setMessage(error?.response?.data);
+        setStatus("warning");
+      });
   };
   const handleRegister = () => {
     navigate("/register");
@@ -89,6 +96,7 @@ const Login = () => {
           />
         </div>
       </div>
+      {status && <NotifyStatus status={status} message={message} />}
     </>
   );
 };
