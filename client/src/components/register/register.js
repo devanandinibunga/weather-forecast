@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Form, Input, Select } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import NotifyStatus from "../notify-status/notify-status";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import "./register.scss";
@@ -11,6 +12,12 @@ const Register = () => {
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const token = Cookies.get("authToken");
+  useEffect(() => {
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [token]);
   const onFinish = async (payload) => {
     await axios.post("http://localhost:5000/register", payload).then((res) => {
       if (res?.status === 200) {

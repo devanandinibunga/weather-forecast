@@ -1,6 +1,6 @@
 import { Layout } from "antd";
 import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { Header } from "../components/header/header";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -10,6 +10,7 @@ const { Header: AntdHeader, Footer: AntdFooter, Content } = Layout;
 const MainLayout = () => {
   const [profileDetails, setProfileDetails] = useState({});
   const token = Cookies.get("authToken");
+  const navigate = useNavigate();
   useEffect(() => {
     if (token) {
       axios
@@ -23,8 +24,10 @@ const MainLayout = () => {
             setProfileDetails(res?.data);
           }
         });
+    } else {
+      navigate("/login");
     }
-  }, []);
+  }, [token]);
   return (
     <Layout>
       <AntdHeader>

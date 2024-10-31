@@ -2,7 +2,7 @@ import { Button, Form, Input } from "antd";
 import { useForm } from "antd/es/form/Form";
 import axios from "axios";
 import Cookies from "js-cookie";
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import "./login.scss";
@@ -10,6 +10,12 @@ import "./login.scss";
 const Login = () => {
   const [form] = useForm();
   const navigate = useNavigate();
+  const token = Cookies.get("authToken");
+  useEffect(() => {
+    if (token) {
+      navigate("/dashboard");
+    }
+  }, [token]);
   const onFinish = async (values) => {
     await axios
       .post("http://localhost:5000/login", values)
