@@ -22,26 +22,26 @@ function Dashboard() {
   const [message, setMessage] = useState("");
   const [visible, setVisible] = useState(false);
   const [filters, setFilters] = useState({});
-  const [error, setError] = useState("");
   const [addLocation, setAddLocation] = useState(false);
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
+  const token = Cookies.get("authToken");
+
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
   const handleUpload = async () => {
     if (!file) {
-      setError("Please upload a CSV file");
+      setMessage("Please upload a CSV file");
+      setStatus("warning");
       return;
     }
-
     setLoading(true);
-    setError("");
-
+    setStatus("");
+    setMessage("");
     const formData = new FormData();
     formData.append("file", file);
-
     try {
       const response = await axios.post(
         "http://localhost:5000/api/upload",
@@ -57,7 +57,8 @@ function Dashboard() {
       navigate("/temperature-chart");
     } catch (err) {
       console.error(err);
-      setError("Error uploading file");
+      setStatus("warning");
+      setMessage("Error uploading file");
     } finally {
       setLoading(false);
     }
@@ -70,7 +71,6 @@ function Dashboard() {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
           setLocation({ latitude: latitude, longitude: longitude });
-          console.log("Latitude:", latitude, "Longitude:", longitude);
         },
         (error) => {
           console.error("Error getting location:", error.message);
@@ -119,10 +119,10 @@ function Dashboard() {
         console.error("Error adding location:", error.response.data.message);
       }
     };
-    if (location?.latitude !== null) {
+    if (location?.latitude !== null && token) {
       addLocation();
     }
-  }, [location]);
+  }, [location, token]);
   const handleLocationSelect = (value) => {
     const selectedLocation = savedLocations.find(
       (loc) => `${loc.latitude},${loc.longitude}` === value,
@@ -146,7 +146,7 @@ function Dashboard() {
     closeDrawer();
   };
   return (
-    <Row className="dashboard-wrapper">
+    <Row className="dashboard-wrapper" gutter={[0, 10]}>
       <Col span={24}>
         <WeatherDashboard />
       </Col>
@@ -168,7 +168,7 @@ function Dashboard() {
               >
                 https://open-meteo.com/en/docs/historical-weather-api
               </a>
-              and also remove the metadat from the file before uploading. The
+              and also remove the metadata from the file before uploading. The
               schema should be temperature, rain, windspeed and humidity.
             </p>
           </div>

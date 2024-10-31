@@ -9,6 +9,7 @@ export const Header = ({ profileDetails }) => {
   const navigate = useNavigate();
   const handleLogout = () => {
     Cookies.remove("authToken");
+    localStorage.removeItem("isAuthenticated");
     navigate("/login");
   };
   const items = [
@@ -33,7 +34,7 @@ export const Header = ({ profileDetails }) => {
     <div className="header-container">
       <div>
         <p className="welcome-message">Welcome!! {profileDetails?.username}</p>
-        <h3>Weather Forecast</h3>
+        <h3>Weather Forecast Analysis</h3>
       </div>
       <div className="dropdown-container">
         <Dropdown

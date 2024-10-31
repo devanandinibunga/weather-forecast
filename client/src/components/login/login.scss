@@ -1,23 +1,63 @@
-.login-page-container {
-  // background-image: url("../../asserts/images/login-page-image.jpg");
-  background-size: cover;
-  background-position: center;
+@use "../../assests/style/" as *;
+
+.login-wrapper {
   height: 100vh;
-  width: 100%;
-  object-fit: contain;
-  display: flex;
-  justify-content: left;
-  align-items: center;
-  .login-form-container {
-    padding: 5%;
-    width: 30%;
-    .forgot-password {
-      color: #1677ff;
+  @include justify-content-between;
+  @include align-items-center;
+  background-color: $white;
+  padding: 0 5rem;
+  @include media("<md") {
+    @include flex-column;
+    padding: 2rem 0;
+  }
+  .ant-form-item .ant-form-item-explain-error {
+    text-align: left;
+  }
+  .login-form-wrapper {
+    width: 35%;
+
+    .login-button-wrapper {
       text-align: right;
-      cursor: pointer;
+      .login-button {
+        @include font-style($white, 1.6rem, normal, 400);
+        background-color: $indigo;
+      }
+    }
+    @include media("<md") {
+      width: 80%;
+      height: 40vh;
     }
   }
-}
-.ant-modal .ant-modal-content {
-  text-align: center;
+  .register-container {
+    @include align-items-center;
+    margin-top: 2rem;
+    gap: 1rem;
+    .new-customer {
+      @include font-style($black, 2rem, normal, 600);
+    }
+    .register {
+      cursor: pointer;
+      @include font-style($black, 1.6rem, normal, 500);
+      &:hover {
+        color: $indigo;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+    }
+  }
+  .login-logo-wrapper {
+    width: 60%;
+    text-align: center;
+    @include media("<md") {
+      width: 100%;
+    }
+    .login-logo {
+      height: 95vh;
+      width: 100%;
+      @include media("<md") {
+        height: 50vh;
+        width: 80%;
+      }
+    }
+  }
 }

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Button, Drawer, Form, Input, Select, Table, DatePicker } from "antd";
-import _ from "lodash";
 import axios from "axios";
 import Cookies from "js-cookie";
 import moment from "moment";
 import "./forecast-table.scss";
 import { useForm } from "antd/es/form/Form";
 import { TableShimmer } from "../table-shimmer/table-shimmer";
+import NotifyStatus from "../notify-status/notify-status";
 
 const ForecastTable = ({
   location,
@@ -20,7 +20,8 @@ const ForecastTable = ({
   setLocation,
 }) => {
   const [data, setData] = useState([]);
-  const [error, setError] = useState([]);
+  const [status, setStatus] = useState("");
+  const [message, setMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,8 +56,8 @@ const ForecastTable = ({
             setPageSize(response?.data?.limit);
           });
       } catch (err) {
-        console.error("Error fetching data", err);
-        setError("Error fetching data");
+        setStatus("warning");
+        setMessage(err);
         setIsLoading(false);
       }
     }
@@ -109,6 +110,10 @@ const ForecastTable = ({
     setCurrentPage(page);
     setPageSize(pageSize);
   };
+  const disabledDate = (current) => {
+    const today = moment().startOf("day");
+    return current < today || current > today.add(7, "days"); // Disable dates before today and after 7 days from today
+  };
   return (
     <div className="table-wrapper">
       <div className="location-filter-wrapper">
@@ -144,7 +149,7 @@ const ForecastTable = ({
       >
         <Form layout="vertical" onFinish={handleFilterSubmit} form={form}>
           <Form.Item label="Date Range" name="dateRange">
-            <RangePicker />
+            <RangePicker disabledDate={disabledDate} />
           </Form.Item>
           <Form.Item label="Minimum Temperature" name="min_temp">
             <Input type="number" placeholder="Min Temperature" />
@@ -171,6 +176,7 @@ const ForecastTable = ({
           onChange: handlePageChange,
         }}
       />
+      {status && <NotifyStatus status={status} message={message} />}
     </div>
   );
 };

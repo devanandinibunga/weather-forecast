@@ -1,22 +1,33 @@
-import React from "react";
-import "./register.scss";
-import { Button, Form, Input } from "antd";
+import React, { useState } from "react";
+import { Button, Form, Input, Select } from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import NotifyStatus from "../notify-status/notify-status";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import "./register.scss";
 
-export const Register = () => {
+const Register = () => {
   const [form] = Form.useForm();
+  const [status, setStatus] = useState("");
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const onFinish = async (payload) => {
     await axios.post("http://localhost:5000/register", payload).then((res) => {
       if (res?.status === 200) {
         form.resetFields();
-        navigate("/login");
+        setStatus("success");
+        setMessage("Registered successfully");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
       }
     });
   };
   return (
     <div className="register-page-container">
+      <div className="register-logo-wrapper">
+        <img src="/images/register.jpg" alt="register" className="login-logo" />
+      </div>
       <div className="register-form-container">
         <Form layout="vertical" onFinish={onFinish} form={form}>
           <Form.Item
@@ -29,7 +40,10 @@ export const Register = () => {
           <Form.Item
             name="email"
             label="Email"
-            rules={[{ required: true, message: "Please enter your email!" }]}
+            rules={[
+              { required: true, message: "Please enter your email!" },
+              { type: "email", message: "Please enter a valid email address" },
+            ]}
           >
             <Input placeholder="Please enter email" />
           </Form.Item>
@@ -38,28 +52,62 @@ export const Register = () => {
             label="Password"
             rules={[{ required: true, message: "Please enter your password!" }]}
           >
-            <Input placeholder="Please enter password" />
+            <Input.Password
+              placeholder="Please confirm password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />{" "}
           </Form.Item>
           <Form.Item
             name="confirmpassword"
             label="Confirm Password"
+            dependencies={["password"]}
             rules={[
-              {
-                required: true,
-                message: "Please enter your confirm password!",
-              },
+              { required: true, message: "Please confirm your password!" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error(
+                      "The two passwords that you entered do not match!",
+                    ),
+                  );
+                },
+              }),
             ]}
           >
-            <Input placeholder="Please enter confirm password" />
+            <Input.Password
+              placeholder="Please confirm password"
+              iconRender={(visible) =>
+                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+              }
+            />
           </Form.Item>
           <Form.Item
             name="role"
             label="Role"
-            rules={[
-              { required: true, message: "Please enter the role!" },
-            ]}
+            rules={[{ required: true, message: "Please enter the role!" }]}
           >
-            <Input placeholder="Please enter role" />
+            <Select
+              placeholder="Please select the user role"
+              options={[
+                {
+                  value: "user",
+                  label: "user",
+                },
+                {
+                  value: "manager",
+                  label: "manager",
+                },
+                {
+                  value: "admin",
+                  label: "admin",
+                },
+              ]}
+            />
           </Form.Item>
           <Form.Item>
             <Button htmlType="submit">Register</Button>
@@ -69,6 +117,8 @@ export const Register = () => {
           </p>
         </Form>
       </div>
+      {status && <NotifyStatus status={status} message={message} />}
     </div>
   );
 };
+export default Register;

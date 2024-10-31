@@ -1,19 +1,37 @@
+@use "../../assests/style/" as *;
+
 .register-page-container {
-  // background-image: url("../../asserts/images/login-page-image.jpg");
   background-size: cover;
   background-position: center;
   height: 100vh;
   width: 100%;
   object-fit: contain;
-  display: flex;
-  justify-content: left;
-  align-items: center;
+  @include justify-content-between;
+  @include align-items-center;
+  @include media("<md") {
+    @include flex-column;
+    padding: 2rem 0;
+  }
   .register-form-container {
-    // background-color: red;
-    // display: flex;
     padding: 0 5%;
     width: 30%;
-    // justify-content: center;
-    // align-items: center;
+    @include media("<md") {
+      width: 80%;
+    }
+  }
+  .register-logo-wrapper {
+    width: 60%;
+    @include justify-content-center;
+    @include media("<md") {
+      width: 100%;
+    }
+    .login-logo {
+      height: 95vh;
+      width: 80%;
+      @include media("<md") {
+        height: 60vh;
+        width: 100%;
+      }
+    }
   }
 }

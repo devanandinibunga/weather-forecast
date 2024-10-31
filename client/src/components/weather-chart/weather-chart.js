@@ -16,6 +16,7 @@ import "./weather-chart.scss";
 import moment from "moment";
 
 const WeatherChart = ({ savedLocations }) => {
+  const isMobile = window.innerWidth <= 768;
   const [data, setData] = useState([]);
   const [selectedValues, setSelectedValues] = useState([
     "rain",
@@ -31,7 +32,6 @@ const WeatherChart = ({ savedLocations }) => {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
           setLocation({ latitude: latitude, longitude: longitude });
-          console.log("Latitude:", latitude, "Longitude:", longitude);
         },
         (error) => {
           console.error("Error getting location:", error.message);
@@ -61,7 +61,6 @@ const WeatherChart = ({ savedLocations }) => {
           )}`,
         )
         .then((response) => {
-          console.log(response?.data);
           const hourly = response?.data?.hourly;
 
           if (!hourly) {
@@ -150,26 +149,11 @@ const WeatherChart = ({ savedLocations }) => {
             tickFormatter={(time) =>
               moment(time, "YYYY-MM-DDTHH:mm:ss").format("DD-MM")
             }
-            interval={20}
-            angle={-45}
+            interval={isMobile ? 50 : 20}
+            angle={isMobile ? -30 : -45}
           />
-          <YAxis
-            yAxisId="left"
-            label={{
-              value: "Temperature (°C) / Humidity (%)",
-              angle: -90,
-              position: "insideLeft",
-            }}
-          />
-          <YAxis
-            yAxisId="right"
-            orientation="right"
-            label={{
-              value: "Rain (mm) / Pressure (hPa)",
-              angle: 90,
-              position: "insideRight",
-            }}
-          />
+          <YAxis yAxisId="left" tick={{ fontSize: 12 }} />
+          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} />
           <Tooltip
             formatter={(value, name) => [
               `${value} ${

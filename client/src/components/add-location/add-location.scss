@@ -8,3 +8,9 @@
     background-color: $indigo !important;
   }
 }
+.ant-form-item-explain {
+  text-align: left !important;
+}
+.add-location-btn {
+  @include justify-content-end;
+}

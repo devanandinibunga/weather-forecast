@@ -2,10 +2,15 @@
 
 .ant-layout-header {
   background-color: #a1b8df;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 12vh;
   line-height: 10px;
   padding: 0 15px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 .header-container {
   @include justify-content-between;
