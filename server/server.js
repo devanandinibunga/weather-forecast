@@ -5,8 +5,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const axios = require("axios");
 const WebSocket = require("ws");
-// const Redis = require("redis");
-// const Bull = require("bull");
 const CSVData = require("./models/csvdatamodel");
 const assessmentUserSchema = require("./models/assessmentusermodel");
 const verifyJWT = require("./middleware");
@@ -36,22 +34,6 @@ mongoose
   )
   .then(() => console.log("DB connected"))
   .catch((err) => console.log(`DB connection error: ${err.message}`));
-
-// User Roles
-const roles = {
-  admin: ["admin", "manager", "user"],
-  manager: ["manager", "user"],
-  user: ["user"],
-};
-
-// Role-based access middleware
-const roleBasedAccess = (role) => (req, res, next) => {
-  if (roles[req.user.role].some((r) => role.includes(r))) {
-    next();
-  } else {
-    return res.status(403).json({ message: "Unauthorized" });
-  }
-};
 
 // Register API
 app.post("/register", async (req, res) => {
@@ -119,13 +101,15 @@ app.get("/profile", verifyJWT, async (req, res) => {
   }
 });
 
-// Multer setup to handle CSV file upload
-const upload = multer({ dest: "uploads/" });
 
-// API endpoint to upload and process CSV files
+// Configure multer to store files in memory
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 app.post("/api/upload", upload.single("file"), async (req, res) => {
-  const file = req.file;
   const results = [];
+  const fileBuffer = req.file.buffer;
+
   try {
     await CSVData.deleteMany({});
   } catch (error) {
@@ -133,7 +117,8 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
     return res.status(500).send("Error clearing existing data");
   }
 
-  fs.createReadStream(path.resolve(__dirname, file.path))
+  const csvStream = require("streamifier").createReadStream(fileBuffer);
+  csvStream
     .pipe(csv())
     .on("data", (row) => {
       if (row.time && row["temperature_2m (°C)"]) {
