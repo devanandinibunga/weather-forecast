@@ -10,42 +10,55 @@ import {
   Legend,
 } from "recharts";
 import "./average-temperature-chart.scss";
+import Cookies from "js-cookie";
+import axios from "axios";
+import NotifyStatus from "../notify-status/notify-status";
 
 const WeatherDashboard = () => {
   const [weatherData, setWeatherData] = useState([]);
+  const [status, setStatus] = useState("");
+  const [message, setMessage] = useState("");
+
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:5000");
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const getAverageTemperaturePerDay = (data) => {
-        const averages = {};
+    try {
+      axios
+        .get(
+          "https://weather-forecast-server-one.vercel.app/average-temperature",
+          {
+            headers: {
+              "x-token": Cookies.get("authToken"),
+            },
+          },
+        )
+        .then((response) => {
+          const getAverageTemperaturePerDay = (data) => {
+            const averages = {};
+            data.hourly.time.forEach((time, index) => {
+              const date = time.split("T")[0];
+              const temperature = data.hourly.temperature_2m[index];
+              if (!averages[date]) {
+                averages[date] = { sum: 0, count: 0 };
+              }
+              averages[date].sum += temperature;
+              averages[date].count += 1;
+            });
+            return Object.entries(averages).map(([date, { sum, count }]) => ({
+              date,
+              averageTemperature: (sum / count).toFixed(2), // Calculate average
+            }));
+          };
 
-        data.hourly.time.forEach((time, index) => {
-          const date = time.split("T")[0]; // Get the date part (YYYY-MM-DD)
-          const temperature = data.hourly.temperature_2m[index];
-
-          if (!averages[date]) {
-            averages[date] = { sum: 0, count: 0 };
-          }
-
-          averages[date].sum += temperature;
-          averages[date].count += 1;
+          const averageTemperatures = getAverageTemperaturePerDay(
+            response?.data,
+          );
+          setWeatherData(averageTemperatures);
         });
-
-        // Convert averages object to array format for Recharts
-        return Object.entries(averages).map(([date, { sum, count }]) => ({
-          date,
-          averageTemperature: (sum / count).toFixed(2), // Calculate average
-        }));
-      };
-
-      const averageTemperatures = getAverageTemperaturePerDay(data);
-      setWeatherData(averageTemperatures);
-    };
-
-    return () => ws.close();
+    } catch (err) {
+      console.log(err);
+      setStatus("warning");
+      setMessage(err?.response?.data?.message);
+    }
   }, []);
-
   return (
     <div className="weather-dashboard-wrapper">
       <h3 className="title">Average Temperature Forecast</h3>
@@ -55,7 +68,7 @@ const WeatherDashboard = () => {
           <XAxis dataKey="date" />
           <Legend />
           <YAxis
-            domain={[0, "dataMax + 5"]} // Adjust domain to start from 0 to data max + 10
+            domain={[0, "dataMax + 5"]}
             ticks={[0, 5, 10, 15, 20, 25, 30, 35, 40, 45]}
           />
           <Tooltip />
@@ -67,6 +80,7 @@ const WeatherDashboard = () => {
         *Note: The average temperature forecast for the upcoming week is
         displayed starting from today.
       </p>
+      {status && <NotifyStatus status={status} message={message} />}
     </div>
   );
 };

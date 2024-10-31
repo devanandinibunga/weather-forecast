@@ -6,13 +6,13 @@ import WeatherDashboard from "../components/average-temperature-chart/average-te
 import { useForm } from "antd/es/form/Form";
 import ForecastTable from "../components/forecast-table/forecast-table";
 import { moment } from "moment";
-import { AddLocation } from "../components/add-location/add-location";
 import "./dashboard.scss";
 import WeatherChart from "../components/weather-chart/weather-chart";
 import { Col, Row } from "antd";
 import NotifyStatus from "../components/notify-status/notify-status";
+import AddLocation from "../components/add-location/add-location";
 
-function Dashboard() {
+const Dashboard = () => {
   const [form] = useForm();
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -65,21 +65,24 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          setLocation({ latitude: latitude, longitude: longitude });
-        },
-        (error) => {
-          console.error("Error getting location:", error.message);
-        },
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
-    fetchSavedLocations();
+    const addGeoLocation = async () => {
+      await fetchSavedLocations();
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            setLocation({ latitude: latitude, longitude: longitude });
+          },
+          (error) => {
+            console.error("Error getting location:", error.message);
+          },
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    };
+    addGeoLocation();
   }, []);
   const fetchSavedLocations = async () => {
     try {
@@ -93,6 +96,7 @@ function Dashboard() {
       );
       setSavedLocations(response?.data?.locations);
     } catch (error) {
+      console.log(error);
       console.error(
         "Error retrieving locations:",
         error?.response?.data?.message,
@@ -102,14 +106,23 @@ function Dashboard() {
     }
   };
   useEffect(() => {
+    const isLocation = savedLocations.filter(
+      (loc) =>
+        loc.latitude === location.latitude &&
+        loc.longitude === location.longitude,
+    );
     const addLocation = async () => {
       try {
         await axios
-          .post("https://weather-forecast-server-one.vercel.app/api/addLocation", location, {
-            headers: {
-              "x-token": Cookies.get("authToken"),
+          .post(
+            "https://weather-forecast-server-one.vercel.app/api/addLocation",
+            location,
+            {
+              headers: {
+                "x-token": Cookies.get("authToken"),
+              },
             },
-          })
+          )
           .then((response) => {
             setAddLocation(false);
             setStatus("success");
@@ -124,7 +137,9 @@ function Dashboard() {
       }
     };
     if (location?.latitude !== null && token) {
-      addLocation();
+      if (isLocation?.length === 0) {
+        addLocation();
+      }
     }
   }, [location, token]);
   const handleLocationSelect = (value) => {
@@ -206,6 +221,6 @@ function Dashboard() {
       {status && <NotifyStatus status={status} message={message} />}
     </Row>
   );
-}
+};
 
 export default Dashboard;

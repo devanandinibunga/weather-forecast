@@ -3,16 +3,16 @@ import React from "react";
 import { useForm } from "antd/es/form/Form";
 import "./add-location.scss";
 
-export const AddLocation = ({ setLocation, addLocation, setAddLocation }) => {
+const AddLocation = ({ setLocation, addLocation, setAddLocation }) => {
   const [form] = useForm();
 
   const showModal = () => {
     setAddLocation(true);
-    form.resetFields(); 
+    form.resetFields();
   };
 
   const handleCancel = () => {
-    setAddLocation(false); 
+    setAddLocation(false);
   };
 
   return (
@@ -24,8 +24,8 @@ export const AddLocation = ({ setLocation, addLocation, setAddLocation }) => {
         <Form
           layout="vertical"
           onFinish={(values) => {
-            setLocation(values); 
-            setAddLocation(false); 
+            setLocation(values);
+            setAddLocation(false);
           }}
           form={form}
         >
@@ -67,7 +67,7 @@ export const AddLocation = ({ setLocation, addLocation, setAddLocation }) => {
               placeholder="Please enter longitude"
               min={-180}
               max={180}
-              step={0.01} 
+              step={0.01}
               style={{ width: "100%" }}
             />
           </Form.Item>
@@ -81,3 +81,4 @@ export const AddLocation = ({ setLocation, addLocation, setAddLocation }) => {
     </div>
   );
 };
+export default AddLocation;

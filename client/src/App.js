@@ -9,16 +9,15 @@ import "./App.css";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import Spinner from "./components/spinner/spinner";
 
-// Lazy load the components
-const Login = lazy(() => import("./components/login/login"));
-const Register = lazy(() => import("./components/register/register"));
-const Dashboard = lazy(() => import("./Dashboard/dashboard"));
-const TemperatureChart = lazy(() =>
-  import("./components/temperature-graph/temperature-graph"),
-);
-const MainLayout = lazy(() => import("./layout/layout"));
-
 function App() {
+  // Lazy load the components
+  const Login = lazy(() => import("./components/login/login"));
+  const Register = lazy(() => import("./components/register/register"));
+  const Dashboard = lazy(() => import("./Dashboard/dashboard"));
+  const TemperatureChart = lazy(() =>
+    import("./components/temperature-graph/temperature-graph"),
+  );
+  const MainLayout = lazy(() => import("./layout/layout"));
   return (
     <Router>
       <Suspense fallback={<Spinner />}>

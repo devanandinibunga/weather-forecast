@@ -5,7 +5,6 @@ import Cookies from "js-cookie";
 import moment from "moment";
 import "./forecast-table.scss";
 import { useForm } from "antd/es/form/Form";
-import { TableShimmer } from "../table-shimmer/table-shimmer";
 import NotifyStatus from "../notify-status/notify-status";
 
 const ForecastTable = ({
@@ -165,7 +164,6 @@ const ForecastTable = ({
         </Form>
       </Drawer>
       <Table
-        locale={isLoading && { emptyText: <TableShimmer row={5} col={5} /> }}
         columns={columns}
         scroll={{ x: "max-content", y: "calc(100vh - 34rem)" }}
         dataSource={formattedData}
