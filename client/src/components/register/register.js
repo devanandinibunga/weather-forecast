@@ -19,7 +19,7 @@ const Register = () => {
     }
   }, [token]);
   const onFinish = async (payload) => {
-    await axios.post("http://localhost:5000/register", payload).then((res) => {
+    await axios.post("https://weather-forecast-server-one.vercel.app/register", payload).then((res) => {
       if (res?.status === 200) {
         form.resetFields();
         setStatus("success");

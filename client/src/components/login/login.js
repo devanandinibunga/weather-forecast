@@ -18,7 +18,7 @@ const Login = () => {
   }, [token]);
   const onFinish = async (values) => {
     await axios
-      .post("http://localhost:5000/login", values)
+      .post("https://weather-forecast-server-one.vercel.app/login", values)
       .then((res) => {
         if (res?.status === 200) {
           Cookies.set("authToken", res?.data?.token, { expires: 3600000 });

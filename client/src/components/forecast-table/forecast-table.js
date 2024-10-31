@@ -34,7 +34,7 @@ const ForecastTable = ({
       try {
         setIsLoading(true);
         axios
-          .get("http://localhost:5000/forecast-data", {
+          .get("https://weather-forecast-server-one.vercel.app/forecast-data", {
             headers: {
               "x-token": Cookies.get("authToken"),
             },

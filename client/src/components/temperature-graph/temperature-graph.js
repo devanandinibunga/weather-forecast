@@ -24,7 +24,7 @@ const TemperatureChart = () => {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/temperature-data",
+        "https://weather-forecast-server-one.vercel.app/temperature-data",
         {
           headers: {
             "x-token": Cookies.get("authToken"),

@@ -44,7 +44,7 @@ function Dashboard() {
     formData.append("file", file);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/upload",
+        "https://weather-forecast-server-one.vercel.app/api/upload",
         formData,
         {
           headers: {
@@ -84,7 +84,7 @@ function Dashboard() {
   const fetchSavedLocations = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/getLocation",
+        "https://weather-forecast-server-one.vercel.app/api/getLocation",
         {
           headers: {
             "x-token": Cookies.get("authToken"),
@@ -103,7 +103,7 @@ function Dashboard() {
     const addLocation = async () => {
       try {
         await axios
-          .post("http://localhost:5000/api/addLocation", location, {
+          .post("https://weather-forecast-server-one.vercel.app/api/addLocation", location, {
             headers: {
               "x-token": Cookies.get("authToken"),
             },

@@ -14,7 +14,7 @@ const MainLayout = () => {
   useEffect(() => {
     if (token) {
       axios
-        .get("http://localhost:5000/profile", {
+        .get("https://weather-forecast-server-one.vercel.app/profile", {
           headers: {
             "x-token": Cookies.get("authToken"),
           },
