@@ -7,7 +7,7 @@ const axios = require("axios");
 const WebSocket = require("ws");
 const CSVData = require("./models/csvdatamodel");
 const assessmentUserSchema = require("./models/assessmentusermodel");
-const verifyJWT = require("./middleware");
+const { verifyJWT, authorizeRole } = require("./middleware");
 const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
@@ -101,7 +101,6 @@ app.get("/profile", verifyJWT, async (req, res) => {
   }
 });
 
-
 // Configure multer to store files in memory
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -165,69 +164,80 @@ app.get("/temperature-data", verifyJWT, async (req, res) => {
   }
 });
 
-app.get("/forecast-data", verifyJWT, async (req, res) => {
-  let {
-    latitude,
-    longitude,
-    start_date,
-    end_date,
-    min_temp,
-    max_temp,
-    page,
-    limit,
-  } = req.query;
-
-  page = parseInt(page) || 1;
-  limit = parseInt(limit) || 10;
-  try {
-    const response = await axios.get("https://api.open-meteo.com/v1/forecast", {
-      params: {
-        latitude: latitude,
-        longitude: longitude,
-        hourly: "temperature_2m",
-      },
-    });
-
-    const { hourly } = response.data;
-
-    let filteredData = hourly.time.map((time, index) => ({
-      time: new Date(time),
-      temperature: hourly.temperature_2m[index],
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude),
-    }));
-    if (start_date || end_date || min_temp || max_temp) {
-      const startDate = start_date ? new Date(start_date) : null;
-      const endDate = end_date ? new Date(end_date) : null;
-      const minTemp = min_temp ? parseFloat(min_temp) : null;
-      const maxTemp = max_temp ? parseFloat(max_temp) : null;
-
-      filteredData = filteredData.filter(({ time, temperature }) => {
-        return (
-          (!startDate || time >= startDate) &&
-          (!endDate || time <= endDate) &&
-          (!minTemp || temperature >= minTemp) &&
-          (!maxTemp || temperature <= maxTemp)
-        );
-      });
-    }
-    const total = filteredData.length;
-    const paginatedData = filteredData.slice((page - 1) * limit, page * limit);
-
-    res.json({
-      total,
+app.get(
+  "/forecast-data",
+  verifyJWT,
+  authorizeRole(["admin", "manager", "user"]),
+  async (req, res) => {
+    let {
+      latitude,
+      longitude,
+      start_date,
+      end_date,
+      min_temp,
+      max_temp,
       page,
       limit,
-      data: paginatedData,
-    });
-  } catch (error) {
-    console.error(
-      `Error fetching data for location (${latitude}, ${longitude}):`,
-      error,
-    );
-    res.status(500).json({ error: "Failed to fetch weather summary data" });
-  }
-});
+    } = req.query;
+
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10;
+    try {
+      const response = await axios.get(
+        "https://api.open-meteo.com/v1/forecast",
+        {
+          params: {
+            latitude: latitude,
+            longitude: longitude,
+            hourly: "temperature_2m",
+          },
+        },
+      );
+
+      const { hourly } = response.data;
+
+      let filteredData = hourly.time.map((time, index) => ({
+        time: new Date(time),
+        temperature: hourly.temperature_2m[index],
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+      }));
+      if (start_date || end_date || min_temp || max_temp) {
+        const startDate = start_date ? new Date(start_date) : null;
+        const endDate = end_date ? new Date(end_date) : null;
+        const minTemp = min_temp ? parseFloat(min_temp) : null;
+        const maxTemp = max_temp ? parseFloat(max_temp) : null;
+
+        filteredData = filteredData.filter(({ time, temperature }) => {
+          return (
+            (!startDate || time >= startDate) &&
+            (!endDate || time <= endDate) &&
+            (!minTemp || temperature >= minTemp) &&
+            (!maxTemp || temperature <= maxTemp)
+          );
+        });
+      }
+      const total = filteredData.length;
+      const paginatedData = filteredData.slice(
+        (page - 1) * limit,
+        page * limit,
+      );
+
+      res.json({
+        total,
+        page,
+        limit,
+        data: paginatedData,
+      });
+    } catch (error) {
+      console.error(
+        `Error fetching data for location (${latitude}, ${longitude}):`,
+        error,
+      );
+      res.status(500).json({ error: "Failed to fetch weather summary data" });
+    }
+  },
+);
 
 wss.on("connection", (ws) => {
   console.log("Client connected");
@@ -267,50 +277,60 @@ wss.on("connection", (ws) => {
 });
 
 // POST API to add a new location
-app.post("/api/addLocation", verifyJWT, async (req, res) => {
-  const { latitude, longitude } = req.body;
+app.post(
+  "/api/addLocation",
+  verifyJWT,
+  authorizeRole(["admin"]),
+  async (req, res) => {
+    const { latitude, longitude } = req.body;
 
-  if (latitude && longitude) {
-    try {
-      // Check if a location with the same latitude and longitude already exists
-      const existingLocation = await locationSchema.findOne({
-        latitude,
-        longitude,
-      });
-
-      if (existingLocation) {
-        return res.status(409).json({
-          message:
-            "Location with the same latitude and longitude already exists",
-          location: existingLocation,
+    if (latitude && longitude) {
+      try {
+        // Check if a location with the same latitude and longitude already exists
+        const existingLocation = await locationSchema.findOne({
+          latitude,
+          longitude,
         });
+
+        if (existingLocation) {
+          return res.status(409).json({
+            message:
+              "Location with the same latitude and longitude already exists",
+            location: existingLocation,
+          });
+        }
+
+        // Create and save new location if it doesn't already exist
+        const newLocation = new locationSchema({ latitude, longitude });
+        await newLocation.save();
+
+        res.status(200).json({
+          message: "Location added successfully",
+          location: newLocation,
+        });
+      } catch (error) {
+        res.status(500).json({ message: "Error adding location", error });
       }
-
-      // Create and save new location if it doesn't already exist
-      const newLocation = new locationSchema({ latitude, longitude });
-      await newLocation.save();
-
-      res.status(200).json({
-        message: "Location added successfully",
-        location: newLocation,
-      });
-    } catch (error) {
-      res.status(500).json({ message: "Error adding location", error });
+    } else {
+      res.status(400).json({ message: "Latitude and longitude are required" });
     }
-  } else {
-    res.status(400).json({ message: "Latitude and longitude are required" });
-  }
-});
+  },
+);
 
 // GET API to retrieve all locations
-app.get("/api/getLocation", verifyJWT, async (req, res) => {
-  try {
-    const locations = await locationSchema.find();
-    res.status(200).json({ locations });
-  } catch (error) {
-    res.status(500).json({ message: "Error retrieving locations", error });
-  }
-});
+app.get(
+  "/api/getLocation",
+  verifyJWT,
+  authorizeRole(["admin", "manager", "user"]),
+  async (req, res) => {
+    try {
+      const locations = await locationSchema.find();
+      res.status(200).json({ locations });
+    } catch (error) {
+      res.status(500).json({ message: "Error retrieving locations", error });
+    }
+  },
+);
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
