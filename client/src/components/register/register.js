@@ -4,7 +4,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import NotifyStatus from "../notify-status/notify-status";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import "./register.scss";
 
 const Register = () => {
@@ -63,12 +62,7 @@ const Register = () => {
             label="Password"
             rules={[{ required: true, message: "Please enter your password!" }]}
           >
-            <Input.Password
-              placeholder="Please confirm password"
-              iconRender={(visible) =>
-                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-              }
-            />{" "}
+            <Input placeholder="Please confirm password" />
           </Form.Item>
           <Form.Item
             name="confirmpassword"
@@ -78,12 +72,7 @@ const Register = () => {
               { required: true, message: "Please confirm your password!" },
             ]}
           >
-            <Input.Password
-              placeholder="Please confirm password"
-              iconRender={(visible) =>
-                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-              }
-            />
+            <Input placeholder="Please confirm password" />
           </Form.Item>
           <Form.Item
             name="role"
